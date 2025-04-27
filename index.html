@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neurodiversity Training Course Finder</title>
+    <style>
+        :root {
+            --primary: #6a4c93;
+            --secondary: #8ac4ff;
+            --accent: #ffd166;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #06d6a0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .finder-section {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        h2 {
+            color: var(--primary);
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+        
+        .filter-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .filter-title {
+            font-weight: bold;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+        
+        .checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            background-color: #f1f3f5;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1 0 calc(50% - 0.5rem);
+            min-width: 200px;
+        }
+        
+        .checkbox-item:hover {
+            background-color: #e9ecef;
+        }
+        
+        .checkbox-item.selected {
+            background-color: var(--secondary);
+            color: var(--dark);
+        }
+        
+        .checkbox-item input {
+            margin-right: 0.5rem;
+        }
+        
+        .results-section {
+            margin-top: 2rem;
+        }
+        
+        .results-info {
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+        
+        .course-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .course-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .course-category {
+            background-color: var(--secondary);
+            color: var(--dark);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 0.4rem 1rem;
+        }
+        
+        .core-category {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .specialist-category {
+            background-color: var(--accent);
+            color: var(--dark);
+        }
+        
+        .course-content {
+            padding: 1.25rem;
+        }
+        
+        .course-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            color: var(--dark);
+        }
+        
+        .course-trainer {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .course-format {
+            display: inline-block;
+            background-color: #e9ecef;
+            font-size: 0.85rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .course-objectives {
+            margin-top: 1rem;
+        }
+        
+        .objective-tag {
+            display: inline-block;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: #495057;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            margin-right: 0.3rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 3rem 0;
+            color: #6c757d;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        button:hover {
+            background-color: #5a3d7a;
+        }
+        
+        button.secondary {
+            background-color: #6c757d;
+        }
+        
+        button.secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        @media screen and (max-width: 768px) {
+            .course-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-group {
+                flex: 1 0 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Neurodiversity Training Course Finder</h1>
+        <p>Find the perfect neurodiversity training course for your needs</p>
+    </header>
+    
+    <div class="container">
+        <section class="finder-section">
+            <h2>Course Finder</h2>
+            <p>Use the filters below to find courses that match your objectives and format preferences.</p>
+            
+            <div class="filter-section">
+                <div class="filter-group">
+                    <div class="filter-title">Learning Objectives</div>
+                    <div class="checkboxes objectives-checkboxes">
+                        <!-- Objectives will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <div class="filter-title">Format Preferences</div>
+                    <div class="checkboxes formats-checkboxes">
+                        <!-- Formats will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button id="reset-filters" class="secondary">Reset Filters</button>
+                <button id="find-courses">Find Courses</button>
+            </div>
+        </section>
+        
+        <section class="results-section">
+            <h2>Recommended Courses</h2>
+            <div class="results-info">Showing all available courses. Use filters to refine your results.</div>
+            
+            <div class="course-list" id="courses-container">
+                <!-- Course cards will be populated by JavaScript -->
+            </div>
+        </section>
+    </div>
+    
+    <script>
+        // Course data including objectives and formats
+        const courseData = {
+            courses: [
+                {
+                    id: 1,
+                    title: "An introduction to neurodiversity",
+                    category: "core",
+                    format: "half-day",
+                    trainer: "",
+                    objectives: ["create-inclusive-culture", "support-neurodivergent", "attract-diverse-talent", "understand-foundations", "comply-legal"],
+                    description: "A comprehensive introduction to neurodiversity concepts and principles."
+                },
+                {
+                    id: 2,
+                    title: "Neurodiversity and allyship",
+                    category: "core",
+                    format: "half-day",
+                    trainer: "",
+                    objectives: ["create-inclusive-culture", "support-neurodivergent", "understand-foundations"],
+                    description: "Learn how to be an effective ally to neurodivergent individuals."
+                },
+                {
+                    id: 3,
+                    title: "Neurodiversity and mental health",
+                    category: "core",
+                    format: "half-day",
+                    trainer: "",
+                    objectives: ["create-inclusive-culture", "support-neurodivergent", "understand-foundations", "prevent-burnout"],
+                    description: "Explore the connections between neurodiversity and mental health."
+                },
+                {
+                    id: 4,
+                    title: "Neurodiversity in depth",
+                    category: "core",
+                    format: "half-day",
+                    trainer: "",
+                    objectives: ["create-inclusive-culture", "support-neurodivergent", "understand-foundations", "specific-conditions", "comply-legal"],
+                    description: "A deeper dive into neurodiversity concepts and applications."
+                },
+                {
+                    id: 5,
+                    title: "Neurodiversity and management",
+                    category: "core",
+                    format: "full-day",
+                    trainer: "",
+                    objectives: ["create-inclusive-culture", "support-neurodivergent", "understand-foundations", "emotional-intelligence", "comply-legal", "prevent-burnout"],
+                    description: "Essential knowledge for managing neurodivergent team members effectively."
+                },
+                {
+                    id: 6,
+                    title: "Neurodiversity and recruitment",
+                    category: "core",
+                    format: "full-day",
+                    trainer: "",
+                    objectives: ["attract-diverse-talent", "understand-foundations", "comply-legal"],
+                    description: "Best practices for inclusive recruitment processes."
+                },
+                {
+                    id: 7,
+                    title: "Inclusive events",
+                    category: "specialist",
+                    format: "structured-program",
+                    length: "2 days",
+                    trainer: "",
+                    objectives: ["create-inclusive-culture", "support-neurodivergent", "inclusive-events"],
+                    description: "Comprehensive guide to creating inclusive events for all attendees."
+                },
+                {
+                    id: 8,
+                    title: "Inclusive presentations",
+                    category: "specialist",
+                    format: "structured-program",
+                    length: "4 weeks",
+                    trainer: "",
+                    objectives: ["create-inclusive-culture", "support-neurodivergent", "inclusive-events"],
+                    description: "Extended program on delivering presentations accessible to neurodivergent audiences."
+                },
+                {
+                    id: 9,
+                    title: "Neurodiversity within the LGBTQIA+ Community",
+                    category: "additional",
+                    format: "one-hour",
+                    trainer: "David Hull-Watters",
+                    objectives: ["create-inclusive-culture", "support-neurodivergent", "understand-foundations", "support-lgbtqia"],
+                    description: "Exploring common experiences, challenges, and strengths of neurodivergent-LGBTQIA+ individuals."
+                },
+                {
+                    id: 10,
+                    title: "Intersectionality",
+                    category: "additional",
+                    format: "one-hour",
+                    trainer: "Kim To",
+                    objectives: ["create-inclusive-culture", "support-neurodivergent", "understand-foundations", "support-lgbtqia"],
+                    description: "Understanding intersectionality and its impact on neurodivergent individuals from marginalized populations."
+                },
+                {
+                    id: 11,
+                    title: "Dyslexia, dyscalculia and dyspraxia",
+                    category: "additional",
+                    format: "one-hour",
+                    trainer: "Toni Horn",
+                    objectives: ["support-neurodivergent", "specific-conditions"],
+                    description: "A comprehensive guide to these conditions, their strengths and challenges."
+                },
+                {
+                    id: 12,
+                    title: "Autism in women",
+                    category: "additional",
+                    format: "one-hour",
+                    trainer: "Charlie Hamilton",
+                    objectives: ["support-neurodivergent", "specific-conditions", "support-lgbtqia"],
+                    description: "Exploring the differences in diagnostic rates and presentation of autism in women."
+                },
+                {
+                    id: 13,
+                    title: "ADHD in women",
+                    category: "additional",
+                    format: "one-hour",
+                    trainer: "Anj Cairns",
+                    objectives: ["support-neurodivergent", "specific-conditions", "support-lgbtqia"],
+                    description: "Debunking myths about ADHD in women and exploring factors specifically affecting women with ADHD."
+                },
+                {
+                    id: 14,
+                    title: "The language of autism",
+                    category: "additional",
+                    format: "one-hour",
+                    trainer: "Charlie Hamilton",
+                    objectives: ["create-inclusive-culture", "support-neurodivergent", "specific-conditions", "inclusive-events"],
+                    description: "Understanding semantics around autism and preferred language for autistic people."
+                },
+                {
+                    id: 15,
+                    title: "A guide to coaching",
+                    category: "additional",
+                    format: "one-hour",
+                    trainer: "Anj Cairns",
+                    objectives: ["support-neurodivergent", "emotional-intelligence"],
+                    description: "An overview of coaching benefits and how to find the right coach."
+                },
+                {
+                    id: 16,
+                    title: "Executive function hacks 1",
+                    category: "additional",
+                    format: "one-hour",
+                    trainer: "Rachel Morgan-Trimmer",
+                    objectives: ["support-neurodivergent", "specific-conditions", "prevent-burnout"],
+                    description: "Understanding executive function and 10 hacks to improve productivity."
+                },
+                {
+                    id: 17,
+                    title: "Executive function hacks 2",
+                    category: "additional",
+                    format: "one-hour",
+                    trainer: "Rachel Morgan-Trimmer",
+                    objectives: ["support-neurodivergent", "specific-conditions", "prevent-burnout"],
+                    description: "Additional strategies to manage and improve executive functioning."
+                },
+                {
+                    id: 18,
+                    title: "Sensory workshop",
+                    category: "additional",
+                    format: "one-hour",
+                    trainer: "Kate Jones",
+                    objectives: ["support-neurodivergent", "specific-conditions"],
+                    description: "Exploring different senses and how to identify and manage your sensory profile."
+                },
+                {
+                    id: 19,
+                    title: "Managing burnout",
+                    category: "additional",
+                    format: "one-hour",
+                    length: "2 hours",
+                    trainer: "Kate Jones",
+                    objectives: ["create-inclusive-culture", "support-neurodivergent", "prevent-burnout"],
+                    description: "Identifying burnout, recovery strategies, and prevention techniques."
+                },
+                {
+                    id: 20,
+                    title: "Parenting neurodivergent kids",
+                    category: "additional",
+                    format: "one-hour",
+                    length: "2 hours",
+                    trainer: "Kate Jones and Rachel Morgan-Trimmer",
+                    objectives: ["support-neurodivergent", "specific-conditions"],
+                    description: "In-depth look at neurodivergent children's needs and neuro-affirming parenting strategies."
+                },
+                {
+                    id: 21,
+                    title: "Inclusive presentations introductory session",
+                    category: "additional",
+                    format: "one-hour",
+                    trainer: "Rachel Morgan-Trimmer",
+                    objectives: ["create-inclusive-culture", "support-neurodivergent", "inclusive-events"],
+                    description: "Tips for making presentations more inclusive for neurodivergent audiences."
+                },
+                {
+                    id: 22,
+                    title: "Resilience Tool Kit",
+                    category: "additional",
+                    format: "half-day",
+                    length: "3 hours",
+                    trainer: "Gill Jordan",
+                    objectives: ["create-inclusive-culture", "emotional-intelligence", "prevent-burnout"],
+                    description: "Workshop to develop personal stress balancing strategies and resilience care plans."
+                },
+                {
+                    id: 23,
+                    title: "Workplace adjustments",
+                    category: "additional",
+                    format: "one-hour",
+                    trainer: "Kim To",
+                    objectives: ["create-inclusive-culture", "support-neurodivergent", "comply-legal"],
+                    description: "Scalable workplace adjustment ideas to support neurodivergent employees."
+                },
+                {
+                    id: 24,
+                    title: "Challenging corporate bullying",
+                    category: "additional",
+                    format: "one-hour",
+                    trainer: "Charlie Hamilton",
+                    objectives: ["create-inclusive-culture", "support-neurodivergent", "comply-legal", "prevent-burnout"],
+                    description: "Empowering strategies to challenge bullying and create positive workplace culture."
+                },
+                {
+                    id: 25,
+                    title: "Emotional Intelligence Workshop",
+                    category: "additional",
+                    format: "half-day",
+                    length: "3 hours",
+                    trainer: "Gill Jordan",
+                    objectives: ["create-inclusive-culture", "emotional-intelligence"],
+                    description: "Exploring emotional intelligence components and how to improve them."
+                },
+                {
+                    id: 26,
+                    title: "My Wellbeing Practice",
+                    category: "additional",
+                    format: "one-hour",
+                    trainer: "Gill Jordan",
+                    objectives: ["emotional-intelligence", "prevent-burnout"],
+                    description: "Creating a personalized wellbeing practice through lifestyle choices."
+                }
+            ],
+            objectives: [
+                { id: "create-inclusive-culture", label: "Create Inclusive Team Culture" },
+                { id: "support-neurodivergent", label: "Support Neurodivergent Team Member/Loved One" },
+                { id: "attract-diverse-talent", label: "Attract/Hire Diverse Talent" },
+                { id: "understand-foundations", label: "Understand Neurodiversity Foundations" },
+                { id: "specific-conditions", label: "Gain Insight into Specific Conditions" },
+                { id: "emotional-intelligence", label: "Strengthen Emotional Intelligence" },
+                { id: "comply-legal", label: "Comply with Legal Responsibilities" },
+                { id: "prevent-burnout", label: "Prevent Burnout" },
+                { id: "inclusive-events", label: "Deliver Inclusive Events/Presentations" },
+                { id: "support-lgbtqia", label: "Support LGBTQIA+ Neurodivergent Individuals" }
+            ],
+            formats: [
+                { id: "one-hour", label: "1-hour session" },
+                { id: "half-day", label: "Half-day workshop" },
+                { id: "full-day", label: "Full-day experience" },
+                { id: "structured-program", label: "Structured program" }
+            ]
+        };
+
+        // State for selected filters
+        let selectedObjectives = [];
+        let selectedFormats = [];
+
+        // DOM elements
+        const objectivesContainer = document.querySelector('.objectives-checkboxes');
+        const formatsContainer = document.querySelector('.formats-checkboxes');
+        const coursesContainer = document.getElementById('courses-container');
+        const resetButton = document.getElementById('reset-filters');
+        const findButton = document.getElementById('find-courses');
+        const resultsInfo = document.querySelector('.results-info');
+
+        // Initialize the page
+        function init() {
+            // Populate objectives checkboxes
+            courseData.objectives.forEach(objective => {
+                const checkboxItem = createCheckboxItem(objective, 'objective');
+                objectivesContainer.appendChild(checkboxItem);
+            });
+            
+            // Populate format checkboxes
+            courseData.formats.forEach(format => {
+                const checkboxItem = createCheckboxItem(format, 'format');
+                formatsContainer.appendChild(checkboxItem);
+            });
+            
+            // Render all courses initially
+            renderCourses(courseData.courses);
+            
+            // Add event listeners
+            resetButton.addEventListener('click', resetFilters);
+            findButton.addEventListener('click', applyFilters);
+        }
+
+        // Create a checkbox item
+        function createCheckboxItem(item, type) {
+            const div = document.createElement('div');
+            div.className = 'checkbox-item';
+            div.dataset.id = item.id;
+            div.dataset.type = type;
+            
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.id = `${type}-${item.id}`;
+            input.value = item.id;
+            
+            const label = document.createElement('label');
+            label.htmlFor = `${type}-${item.id}`;
+            label.textContent = item.label;
+            
+            div.appendChild(input);
+            div.appendChild(label);
+            
+            // Add click event to toggle selection
+            div.addEventListener('click', function(e) {
+                // Prevent checkbox from being clicked twice
+                if (e.target !== input) {
+                    input.checked = !input.checked;
+                }
+                
+                // Toggle selected class
+                this.classList.toggle('selected', input.checked);
+                
+                // Update selected filters
+                if (type === 'objective') {
+                    if (input.checked) {
+                        selectedObjectives.push(item.id);
+                    } else {
+                        selectedObjectives = selectedObjectives.filter(id => id !== item.id);
+                    }
+                } else if (type === 'format') {
+                    if (input.checked) {
+                        selectedFormats.push(item.id);
+                    } else {
+                        selectedFormats = selectedFormats.filter(id => id !== item.id);
+                    }
+                }
+            });
+            
+            return div;
+        }
+
+        // Render courses
+        function renderCourses(courses) {
+            // Clear existing courses
+            coursesContainer.innerHTML = '';
+            
+            if (courses.length === 0) {
+                const noResults = document.createElement('div');
+                noResults.className = 'no-results';
+                noResults.innerHTML = `
+                    <h3>No matching courses found</h3>
+                    <p>Try adjusting your filters to see more courses.</p>
+                `;
+                coursesContainer.appendChild(noResults);
+                return;
+            }
+            
+            // Update results info
+            resultsInfo.textContent = `Showing ${courses.length} course${courses.length !== 1 ? 's' : ''} matching your criteria.`;
+            
+            // Create course cards
+            courses.forEach(course => {
+                const card = createCourseCard(course);
+                coursesContainer.appendChild(card);
+            });
+        }
+
+        // Create a course card
+        function createCourseCard(course) {
+            const card = document.createElement('div');
+            card.className = 'course-card';
+            
+            // Format display text
+            let formatDisplay = '';
+            if (course.format === 'one-hour') {
+                formatDisplay = course.length || '1 hour session';
+            } else if (course.format === 'half-day') {
+                formatDisplay = 'Half-day workshop';
+            } else if (course.format === 'full-day') {
+                formatDisplay = 'Full-day experience';
+            } else if (course.format === 'structured-program') {
+                formatDisplay = course.length || 'Structured program';
+            }
+            
+            // Category classes
+            let categoryClass = '';
+            if (course.category === 'core') {
+                categoryClass = 'core-category';
+            } else if (course.category === 'specialist') {
+                categoryClass = 'specialist-category';
+            }
+            
+            // Objectives display
+            const objectiveTags = course.objectives.map(objId => {
+                const objective = courseData.objectives.find(o => o.id === objId);
+                return objective ? `<span class="objective-tag">${objective.label}</span>` : '';
+            }).join('');
+            
+            card.innerHTML = `
+                <div class="course-category ${categoryClass}">
+                    ${course.category.charAt(0).toUpperCase() + course.category.slice(1)} Course
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">${course.title}</h3>
+                    ${course.trainer ? `<div class="course-trainer">Trainer: ${course.trainer}</div>` : ''}
+                    <div class="course-format">${formatDisplay}</div>
+                    <p>${course.description}</p>
+                    <div class="course-objectives">
+                        ${objectiveTags}
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Apply filters
+        function applyFilters() {
+            // Filter courses based on selected objectives and formats
+            let filteredCourses = courseData.courses;
+            
+            if (selectedObjectives.length > 0) {
+                filteredCourses = filteredCourses.filter(course => {
+                    return selectedObjectives.some(obj => course.objectives.includes(obj));
+                });
+            }
+            
+            if (selectedFormats.length > 0) {
+                filteredCourses = filteredCourses.filter(course => {
+                    return selectedFormats.includes(course.format);
+                });
+            }
+            
+            // Render filtered courses
+            renderCourses(filteredCourses);
+        }
+
+        // Reset filters
+        function resetFilters() {
+            // Clear selected objectives and formats
+            selectedObjectives = [];
+            selectedFormats = [];
+            
+            // Uncheck all checkboxes and remove selected class
+            document.querySelectorAll('.checkbox-item').forEach(item => {
+                item.classList.remove('selected');
+                const input = item.querySelector('input');
+                if (input) {
+                    input.checked = false;
+                }
+            });
+            
+            // Render all courses
+            renderCourses(courseData.courses);
+            resultsInfo.textContent = 'Showing all available courses. Use filters to refine your results.';
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
